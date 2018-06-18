@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: kube-system
+  name: {{ template "cluster-auth.fullname" . }}-authenticator
+  labels:
+    app: {{ template "cluster-auth.app" . }}
+    chart: {{ template "cluster-auth.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "cluster-auth.app" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+      labels:
+        app: {{ template "cluster-auth.app" . }}
+        release: {{ .Release.Name }}
+    spec:
+      # run on the host network (don't depend on CNI)
+      hostNetwork: true
+      # run on each master node
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      - key: CriticalAddonsOnly
+        operator: Exists
+      # run `heptio-authenticator-aws server` with three volumes
+      # - config (mounted from the ConfigMap at /etc/heptio-authenticator-aws/config.yaml)
+      # - state (persisted TLS certificate and keys, mounted from the host)
+      # - output (output kubeconfig to plug into your apiserver configuration, mounted from the host)
+      containers:
+      - name: heptio-authenticator-aws
+        image: {{ .Values.authenticator.image }}:{{ .Values.authenticator.tag }}
+        args:
+        - server
+        - --config=/etc/heptio-authenticator-aws/config.yaml
+        - --state-dir=/var/heptio-authenticator-aws
+        - --generate-kubeconfig=/etc/kubernetes/heptio-authenticator-aws/kubeconfig.yaml
+        resources:
+          requests:
+            memory: 20Mi
+            cpu: 10m
+          limits:
+            memory: 20Mi
+            cpu: 100m
+        volumeMounts:
+        - name: config
+          mountPath: /etc/heptio-authenticator-aws/
+        - name: state
+          mountPath: /var/heptio-authenticator-aws/
+        - name: output
+          mountPath: /etc/kubernetes/heptio-authenticator-aws/
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "cluster-auth.fullname" . }}-config
+      - name: output
+        hostPath:
+          path: /srv/kubernetes/heptio-authenticator-aws/
+      - name: state
+        hostPath:
+          path: /srv/kubernetes/heptio-authenticator-aws/

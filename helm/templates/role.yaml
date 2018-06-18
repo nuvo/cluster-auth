@@ -1,0 +1,14 @@
+{{- range $gi, $group := .Values.groups }}
+{{- if $group.authorization }}
+{{- range $ai, $auth := $group.authorization }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $group.name }}
+  namespace: {{ $auth.namespace }}
+rules:
+{{ toYaml $auth.rules }}
+{{- end }}
+{{- end }}
+{{- end }}

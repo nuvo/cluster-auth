@@ -1,0 +1,50 @@
+authenticator:
+  image: gcr.io/heptio-images/authenticator
+  tag: v0.1.0
+
+clusterID: k8s.cluster.example
+
+groups:
+# Define multiple groups of users
+# Resources to be created are according to the 'authorization' section of the group:
+# If authorization is defined -
+# Role, RoleBinding
+# If authorization is not defined -
+# ClusterRoleBinding (assuming ClusterRole is predefined)
+- name: developers
+  # List of users who are in this group
+  # Can include same users in different grouops
+  users:
+  - user1
+  - user2
+  authentication:
+    # Authentication will be done by assuming this role in this account
+    role: k8s-developers-access
+    account: "accountNumber"
+  authorization:
+  # Define authorizations for multiple namespaces, can not use same namespace twice
+  - namespace: default
+    rules:
+    - apiGroups:
+      - ""
+      - extensions
+      - apps
+      resources:
+      - deployments
+      - replicasets
+      - pods
+      - pods/log
+      - pods/exec
+      - pods/portforward
+      - services
+      - secrets
+      - ingresses
+      - configmaps
+      verbs:
+      - '*'
+- name: cluster-admin
+  users:
+  - admin1
+  authentication:
+    role: admin
+    account: "accountNumber"

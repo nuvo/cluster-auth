@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: kube-system
+  name: {{ template "cluster-auth.fullname" . }}-config
+  labels:
+    app: {{ template "cluster-auth.app" . }}
+    chart: {{ template "cluster-auth.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  config.yaml: |
+    clusterID: {{ .Values.clusterID }}
+    server:
+      mapRoles:
+      {{- range $gi, $group := .Values.groups  }}
+      {{- range $ui, $user := $group.users }}
+      - roleARN: arn:aws:iam::{{ $group.authentication.account }}:role/{{ $group.authentication.role }}
+        username: {{ $user }}
+        groups:
+        - {{ $group.name }}
+      {{- end }}
+      {{- end }}
