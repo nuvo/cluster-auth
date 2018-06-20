@@ -19,7 +19,7 @@ groups:
   - user2
   authentication:
     # Authentication will be done by assuming this role in this account
-    role: k8s-developers-access
+    role: k8s-access
     account: "accountNumber"
   authorization:
   # Define authorizations for multiple namespaces, can not use same namespace twice
