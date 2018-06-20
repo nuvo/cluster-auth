@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "grantee" {
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      identifiers = ["${formatlist("arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/%s", var.users)}"]
     }
   }
 }
