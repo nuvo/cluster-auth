@@ -18,8 +18,7 @@ groups:
   - user1
   - user2
   authentication:
-    # Authentication will be done by assuming this role in this account
-    role: k8s-access
+    # Authentication will be done by mapping the above users from the specified account
     account: "accountNumber"
   authorization:
   # Define authorizations for multiple namespaces, can not use same namespace twice
@@ -46,5 +45,4 @@ groups:
   users:
   - admin1
   authentication:
-    role: admin
     account: "accountNumber"

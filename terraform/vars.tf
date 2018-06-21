@@ -1,11 +1,6 @@
 variable "name" {
-  description = "Role name"
+  description = "Group name"
   default     = "k8s-access"
-}
-
-variable "description" {
-  description = "Role description"
-  default     = "Kubernetes role for Heptio Authenticator for AWS"
 }
 
 variable "users" {

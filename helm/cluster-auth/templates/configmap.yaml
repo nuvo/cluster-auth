@@ -12,10 +12,10 @@ data:
   config.yaml: |
     clusterID: {{ .Values.clusterID }}
     server:
-      mapRoles:
+      mapUsers:
       {{- range $gi, $group := .Values.groups  }}
       {{- range $ui, $user := $group.users }}
-      - roleARN: arn:aws:iam::{{ $group.authentication.account }}:role/{{ $group.authentication.role }}
+      - userARN: arn:aws:iam::{{ $group.authentication.account }}:user/{{ $user }}
         username: {{ $user }}
         groups:
         - {{ $group.name }}
