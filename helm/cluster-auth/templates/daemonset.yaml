@@ -1,3 +1,4 @@
+{{ if .Values.authenticator.enabled }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -62,10 +63,11 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "cluster-auth.fullname" . }}-config
+          name: aws-auth
       - name: output
         hostPath:
           path: /srv/kubernetes/heptio-authenticator-aws/
       - name: state
         hostPath:
           path: /srv/kubernetes/heptio-authenticator-aws/
+{{ end }}
