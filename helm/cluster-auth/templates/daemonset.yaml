@@ -63,7 +63,7 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: aws-auth
+          name: aws-iam-authenticator
       - name: output
         hostPath:
           path: /srv/kubernetes/heptio-authenticator-aws/
