@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: kube-system
-  name: aws-auth
+  name: aws-iam-authenticator
   labels:
     app: {{ template "cluster-auth.app" . }}
     chart: {{ template "cluster-auth.chart" . }}
